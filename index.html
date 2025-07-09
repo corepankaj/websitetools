@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multi-Page Website Builder</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    .container { max-width: 800px; background: white; padding: 20px; border-radius: 10px; margin: auto; }
+    input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; }
+    button { padding: 10px 20px; margin-right: 10px; cursor: pointer; }
+    .preview { background: #f9f9f9; padding: 10px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>🌐 Full Website Builder (Home, Products, About, Contact)</h2>
+  <input id="storeName" placeholder="Store Name" />
+  <textarea id="aboutText" placeholder="About Store (for About page)"></textarea>
+  <textarea id="contactText" placeholder="Contact Info (email, phone, address)"></textarea>
+
+  <h3>Product Entry</h3>
+  <input id="productName" placeholder="Product Name" />
+  <input id="productImage" placeholder="Image URL" />
+  <input id="productPrice" placeholder="Price (₹)" />
+  <textarea id="productDesc" placeholder="Product Description"></textarea>
+  <input id="whatsapp" placeholder="WhatsApp Number (91xxxxxxxxxx)" />
+
+  <button onclick="addProduct()">➕ Add Product</button>
+  <button onclick="generateAllPages()">📦 Generate Website</button>
+
+  <div id="productList"></div>
+</div>
+
+<script>
+  const products = [];
+
+  function addProduct() {
+    const name = document.getElementById("productName").value;
+    const image = document.getElementById("productImage").value;
+    const price = document.getElementById("productPrice").value;
+    const desc = document.getElementById("productDesc").value;
+    const whatsapp = document.getElementById("whatsapp").value;
+
+    if (!name || !price || !image || !whatsapp) {
+      alert("Fill all product fields");
+      return;
+    }
+
+    products.push({ name, image, price, desc, whatsapp });
+
+    document.getElementById("productList").innerHTML += `
+      <div class="preview">
+        <strong>${name}</strong> – ₹${price}
+        <p>${desc}</p>
+      </div>
+    `;
+
+    document.getElementById("productName").value = "";
+    document.getElementById("productImage").value = "";
+    document.getElementById("productPrice").value = "";
+    document.getElementById("productDesc").value = "";
+  }
+
+  function navbar() {
+    return `
+    <nav style="background:#222; padding:15px; text-align:center;">
+      <a href="index.html" style="color:#fff; margin:10px;">Home</a>
+      <a href="products.html" style="color:#fff; margin:10px;">Products</a>
+      <a href="about.html" style="color:#fff; margin:10px;">About</a>
+      <a href="contact.html" style="color:#fff; margin:10px;">Contact</a>
+    </nav>`;
+  }
+
+  function generateAllPages() {
+    const store = document.getElementById("storeName").value || "My Store";
+    const about = document.getElementById("aboutText").value || "Welcome to our store!";
+    const contact = document.getElementById("contactText").value || "Email us at: example@example.com";
+
+    // Products HTML block
+    const productCards = products.map(p => `
+      <div style="border:1px solid #ccc; padding:15px; margin:10px; border-radius:8px; background:#fff;">
+        <img src="${p.image}" style="width:100%; max-height:200px; object-fit:cover;" />
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <strong>₹${p.price}</strong><br>
+        <a href="https://wa.me/${p.whatsapp}?text=I'm%20interested%20in%20${encodeURIComponent(p.name)}" target="_blank">Buy on WhatsApp</a>
+      </div>`).join("");
+
+    const homeHTML = `
+      <html><head><title>${store}</title></head><body>
+      ${navbar()}
+      <h1 style="text-align:center;">Welcome to ${store}</h1>
+      <p style="text-align:center;">Explore our products and get in touch!</p>
+      </body></html>`;
+
+    const productsHTML = `
+      <html><head><title>${store} - Products</title></head><body>
+      ${navbar()}
+      <h2 style="text-align:center;">Our Products</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; padding:20px;">
+      ${productCards}
+      </div>
+      </body></html>`;
+
+    const aboutHTML = `
+      <html><head><title>About - ${store}</title></head><body>
+      ${navbar()}
+      <h2>About Us</h2>
+      <p style="padding: 20px;">${about}</p>
+      </body></html>`;
+
+    const contactHTML = `
+      <html><head><title>Contact - ${store}</title></head><body>
+      ${navbar()}
+      <h2>Contact Us</h2>
+      <p style="padding: 20px;">${contact}</p>
+      </body></html>`;
+
+    // Save to files — part 2 will include JSZip to zip & download all
+
+    const pages = {
+      "index.html": homeHTML,
+      "products.html": productsHTML,
+      "about.html": aboutHTML,
+      "contact.html": contactHTML
+    };
+
+    // Save in browser for part 2
+    localStorage.setItem("multiPageSite", JSON.stringify(pages));
+    alert("✅ Pages generated! Now we'll zip and download them.");
+
+    // NEXT STEP: Call function to zip and download all
+    window.location.href = "https://chat.openai.com/share/zip-tool"; // Placeholder - will provide next
+  }
+</script>
+
+</body>
+</html>
